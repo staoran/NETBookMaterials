@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace FileService.Domain
 {
+    /// <summary>
+    /// 文件存储接口
+    /// </summary>
     public interface IStorageClient
     {
         StorageType StorageType { get; }

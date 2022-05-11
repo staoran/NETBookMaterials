@@ -1,4 +1,9 @@
 ﻿namespace FileService.Infrastructure.Services;
+
+/// <summary>
+/// 又拍云接口配置项
+/// 配合程序加载时读取的配置项成为一个强类型配置项
+/// </summary>
 public class UpYunStorageOptions
 {
     public string BucketName { get; set; }

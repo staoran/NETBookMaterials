@@ -2,6 +2,9 @@
 
 namespace FileService.Infrastructure
 {
+    /// <summary>
+    /// 文件服务的数据库上下文
+    /// </summary>
     public class FSDbContext : BaseDbContext
     {
         public DbSet<UploadedItem> UploadItems { get; private set; }

@@ -9,13 +9,29 @@ namespace FileService.Infrastructure.Services
     class SMBStorageClient : IStorageClient
     {
         private IOptionsSnapshot<SMBStorageOptions> options;
+        /// <summary>
+        /// 注入配置，SMBStorageOptions格式的强类型配置
+        /// </summary>
+        /// <param name="options"></param>
         public SMBStorageClient(IOptionsSnapshot<SMBStorageOptions> options)
         {
             this.options = options;
         }
 
+        /// <summary>
+        /// 定义当前实现类的类型
+        /// </summary>
         public StorageType StorageType => StorageType.Backup;
 
+        /// <summary>
+        /// 保存的实现
+        /// 一个本地保存方案
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="content"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task<Uri> SaveAsync(string key, Stream content, CancellationToken cancellationToken = default)
         {
             if (key.StartsWith('/'))

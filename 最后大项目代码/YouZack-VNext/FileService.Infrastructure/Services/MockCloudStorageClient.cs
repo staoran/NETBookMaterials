@@ -7,6 +7,7 @@ namespace FileService.Infrastructure.Services
     /// <summary>
     /// 把FileService.WebAPI当成一个云存储服务器，是一个Mock。文件保存在wwwroot文件夹下。
     /// 这仅供开发、演示阶段使用，在生产环境中，一定要用专门的云存储服务器来代替。
+    /// 对外相当于提供静态文件存储服务
     /// </summary>
     class MockCloudStorageClient : IStorageClient
     {
@@ -14,12 +15,25 @@ namespace FileService.Infrastructure.Services
         private readonly IWebHostEnvironment hostEnv;
         private readonly IHttpContextAccessor httpContextAccessor;
 
+        /// <summary>
+        /// 注入当前主机服务信息和Http上下文
+        /// </summary>
+        /// <param name="hostEnv"></param>
+        /// <param name="httpContextAccessor"></param>
         public MockCloudStorageClient(IWebHostEnvironment hostEnv, IHttpContextAccessor httpContextAccessor)
         {
             this.hostEnv = hostEnv;
             this.httpContextAccessor = httpContextAccessor;
         }
 
+        /// <summary>
+        /// 也是一个本地保存文件的方法
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="content"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task<Uri> SaveAsync(string key, Stream content, CancellationToken cancellationToken = default)
         {
             if (key.StartsWith('/'))

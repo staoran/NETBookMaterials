@@ -3,6 +3,9 @@ using Zack.DomainCommons.Models;
 
 namespace FileService.Domain.Entities
 {
+    /// <summary>
+    /// 文件上传后保存在数据库的记录
+    /// </summary>
     public record UploadedItem : BaseEntity, IHasCreationTime
     {
         public DateTime CreationTime { get; private set; }
@@ -35,6 +38,16 @@ namespace FileService.Domain.Entities
         public Uri RemoteUrl { get; private set; }
 
 
+        /// <summary>
+        /// 实体创建
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="fileSizeInBytes"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileSHA256Hash"></param>
+        /// <param name="backupUrl"></param>
+        /// <param name="remoteUrl"></param>
+        /// <returns></returns>
         public static UploadedItem Create(Guid id, long fileSizeInBytes, string fileName, string fileSHA256Hash, Uri backupUrl, Uri remoteUrl)
         {
             UploadedItem item = new UploadedItem()

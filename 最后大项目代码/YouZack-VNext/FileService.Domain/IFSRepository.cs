@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace FileService.Domain
 {
+    /// <summary>
+    /// 已上传的文件记录的数据仓储接口
+    /// </summary>
     public interface IFSRepository
     {
         /// <summary>

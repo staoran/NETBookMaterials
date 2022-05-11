@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FileService.Infrastructure.Configs
 {
+    /// <summary>
+    /// ef实体配置
+    /// </summary>
     class UploadedItemConfig : IEntityTypeConfiguration<UploadedItem>
     {
         public void Configure(EntityTypeBuilder<UploadedItem> builder)

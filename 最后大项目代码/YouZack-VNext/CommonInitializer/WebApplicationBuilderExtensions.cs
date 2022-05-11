@@ -18,10 +18,18 @@ using Zack.JWT;
 
 namespace CommonInitializer
 {
+    /// <summary>
+    /// WebAPP 启动扩展类
+    /// </summary>
     public static class WebApplicationBuilderExtensions
     {
+        /// <summary>
+        /// 初始化数据库配置项
+        /// </summary>
+        /// <param name="builder"></param>
         public static void ConfigureDbConfiguration(this WebApplicationBuilder builder)
         {
+            // builder.Host.ConfigureAppConfiguration 主机配置
             builder.Host.ConfigureAppConfiguration((hostCtx, configBuilder) =>
             {
                 //不能使用ConfigureAppConfiguration中的configBuilder去读取配置，否则就循环调用了，因此这里直接自己去读取配置文件
@@ -32,11 +40,17 @@ namespace CommonInitializer
             });
         }
 
+        /// <summary>
+        /// 初始化额外服务
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="initOptions"></param>
         public static void ConfigureExtraServices(this WebApplicationBuilder builder, InitializerOptions initOptions)
         {
             IServiceCollection services = builder.Services;
             IConfiguration configuration = builder.Configuration;
             var assemblies = ReflectionHelper.GetAllReferencedAssemblies();
+            // 自动注册各个程序集中的IMediatorHandler接口的实现服务类
             services.RunModuleInitializers(assemblies);
             services.AddAllDbContexts(ctx =>
             {
@@ -50,6 +64,7 @@ namespace CommonInitializer
             //开始:Authentication,Authorization
             //只要需要校验Authentication报文头的地方（非IdentityService.WebAPI项目）也需要启用这些
             //IdentityService项目还需要启用AddIdentityCore
+            // 授权和身份验证
             builder.Services.AddAuthorization();
             builder.Services.AddAuthentication();
             JWTOptions jwtOpt = configuration.GetSection("JWT").Get<JWTOptions>();
@@ -96,6 +111,7 @@ namespace CommonInitializer
             {                
                 fv.RegisterValidatorsFromAssemblies(assemblies);
             });
+            // services.Configure 服务配置
             services.Configure<JWTOptions>(configuration.GetSection("JWT"));
             services.Configure<IntegrationEventRabbitMQOptions>(configuration.GetSection("RabbitMQ"));
             services.AddEventBus(initOptions.EventBusQueueName, assemblies);

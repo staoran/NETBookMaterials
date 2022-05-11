@@ -8,12 +8,21 @@ using System.Threading.Tasks;
 using Zack.Commons;
 
 namespace FileService.Domain;
+
+/// <summary>
+/// 文件领域服务层
+/// </summary>
 public class FSDomainService
 {
     private readonly IFSRepository repository;
     private readonly IStorageClient backupStorage;//备份服务器
     private readonly IStorageClient remoteStorage;//文件存储服务器
 
+    /// <summary>
+    /// 注入文件仓储层，备份服务器，文件存储服务器
+    /// </summary>
+    /// <param name="repository"></param>
+    /// <param name="storageClients"></param>
     public FSDomainService(IFSRepository repository,
         IEnumerable<IStorageClient> storageClients)
     {
@@ -24,9 +33,17 @@ public class FSDomainService
     }
 
     //领域服务只有抽象的业务逻辑
+    /// <summary>
+    /// 领域层的业务逻辑，上传文件
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="fileName"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task<UploadedItem> UploadAsync(Stream stream, string fileName,
         CancellationToken cancellationToken)
     {
+        // 计算文件的hash值
         string hash = HashHelper.ComputeSha256Hash(stream);
         long fileSize = stream.Length;
         DateTime today = DateTime.Today;
@@ -43,13 +60,16 @@ public class FSDomainService
             return oldUploadItem;
         }
         //backupStorage实现很稳定、速度很快，一般都使用本地存储（文件共享或者NAS）
+        // 备份用的 IStorageClient 实现
         Uri backupUrl = await backupStorage.SaveAsync(key, stream, cancellationToken);//保存到本地备份
         stream.Position = 0;
+        // 对外使用的 IStorageClient 实现，一般是外部服务 如 OSS 七牛云 又拍云 或 自己实现的文件服务器
         Uri remoteUrl = await remoteStorage.SaveAsync(key, stream, cancellationToken);//保存到生产的存储系统
         stream.Position = 0;
         Guid id = Guid.NewGuid();
         //领域服务并不会真正的执行数据库插入，只是把实体对象生成，然后由应用服务和基础设施配合来真正的插入数据库！
         //DDD中尽量避免直接在领域服务中执行数据库的修改（包含删除、新增）操作。
-        return UploadedItem.Create(id, fileSize, fileName, hash, backupUrl, remoteUrl);
+        // 返回后由调用方自己去更新数据库
+        return UploadedItem.Create(id, fileSize, fileName, hash, backupUrl, remoteUrl);// 生成 UploadedItem 实体对象
     }
 }
